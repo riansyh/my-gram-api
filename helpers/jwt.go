@@ -10,7 +10,7 @@ import (
 
 var secretKey = "rahasia"
 
-func GenerateToken(id uint, email string, role string) string {
+func GenerateToken(id uint, email string) string {
 	claims := jwt.MapClaims{
 		"id":    id,
 		"email": email,
