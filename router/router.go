@@ -4,12 +4,17 @@ import (
 	"my-gram/controllers"
 	"my-gram/middlewares"
 
+	_ "my-gram/docs"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+
 	"github.com/gin-gonic/gin"
 )
 
 func StartApp() *gin.Engine {
 	r := gin.Default()
-
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	userRouter := r.Group("/users")
 	{
 		userRouter.POST("/register", controllers.UserRegister)
