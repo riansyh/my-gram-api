@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// User represents the model for a user
 type User struct {
 	GormModel
 	Email        string        `gorm:"not null;uniqueIndex" json:"email" form:"email" valid:"required~Your email is required,email~Invalid email format"`

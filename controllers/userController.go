@@ -13,13 +13,17 @@ var (
 	appJSON = "application/json"
 )
 
+type jwtResponse struct {
+	Jwt string `json:"jwt"`
+}
+
 // UserRegister godoc
 // @Summary User registration
 // @Description Register user using email
 // @Tags User
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.User
+// @Success 201 {object} models.User
 // @Router /users/register [post]
 func UserRegister(c *gin.Context) {
 	db := database.GetDB()
@@ -57,7 +61,7 @@ func UserRegister(c *gin.Context) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Success 200 {string} jwt
+// @Success 200 {object} jwtResponse
 // @Router /users/login [post]
 func UserLogin(c *gin.Context) {
 	db := database.GetDB()
