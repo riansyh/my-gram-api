@@ -2,7 +2,10 @@ package router
 
 import (
 	"my-gram/controllers"
+	"my-gram/database"
 	"my-gram/middlewares"
+	"my-gram/repositories"
+	"my-gram/services"
 
 	_ "my-gram/docs"
 
@@ -23,12 +26,18 @@ import (
 func StartApp() *gin.Engine {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	userRouter := r.Group("/users")
 	{
+		// Initialize repositories, services, and controllers
+		userRepository := repositories.NewUserRepository(database.GetDB())
+		userService := services.NewUserService(userRepository)
+		userController := controllers.NewUserController(userService)
+
 		// Create
-		userRouter.POST("/register", controllers.UserRegister)
+		userRouter.POST("/register", userController.Register)
 		// Login
-		userRouter.POST("/login", controllers.UserLogin)
+		userRouter.POST("/login", userController.Login)
 	}
 
 	socialMediaRouter := r.Group("/social-medias")

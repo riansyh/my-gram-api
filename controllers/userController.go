@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"my-gram/database"
-	"my-gram/helpers"
 	"my-gram/models"
+	"my-gram/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +16,16 @@ type jwtResponse struct {
 	Jwt string `json:"jwt"`
 }
 
+type userController struct {
+	userService services.UserService
+}
+
+func NewUserController(userService services.UserService) *userController {
+	return &userController{
+		userService: userService,
+	}
+}
+
 // UserRegister godoc
 // @Summary User registration
 // @Description Register user using email
@@ -25,20 +34,18 @@ type jwtResponse struct {
 // @Produce json
 // @Success 201 {object} models.User
 // @Router /users/register [post]
-func UserRegister(c *gin.Context) {
-	db := database.GetDB()
-	contentType := helpers.GetContentType(c)
-	_, _ = db, contentType
-	User := models.User{}
+func (uc *userController) Register(c *gin.Context) {
+	user := &models.User{}
 
-	if contentType == appJSON {
-		c.ShouldBindJSON(&User)
-	} else {
-		c.ShouldBind(&User)
+	if err := c.ShouldBind(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": err.Error(),
+		})
+		return
 	}
 
-	err := db.Debug().Create(&User).Error
-
+	createdUser, err := uc.userService.Register(user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
@@ -48,10 +55,10 @@ func UserRegister(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"id":       User.ID,
-		"email":    User.Email,
-		"username": User.Username,
-		"age":      User.Age,
+		"id":       createdUser.ID,
+		"email":    createdUser.Email,
+		"username": createdUser.Username,
+		"age":      createdUser.Age,
 	})
 }
 
@@ -63,44 +70,27 @@ func UserRegister(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} jwtResponse
 // @Router /users/login [post]
-func UserLogin(c *gin.Context) {
-	db := database.GetDB()
-	contentType := helpers.GetContentType(c)
-	_, _ = db, contentType
-	User := models.User{}
-	password := ""
+func (uc *userController) Login(c *gin.Context) {
+	user := &models.User{}
 
-	if contentType == appJSON {
-		c.ShouldBindJSON(&User)
-	} else {
-		c.ShouldBind(&User)
+	if err := c.ShouldBind(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad Request",
+			"message": err.Error(),
+		})
+		return
 	}
 
-	password = User.Password
-
-	err := db.Debug().Where("email = ?", User.Email).Take(&User).Error
-
+	token, err := uc.userService.Login(user.Email, user.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusUnauthorized, gin.H{
 			"error":   "Unauthorized",
 			"message": "invalid email/password",
 		})
 		return
 	}
 
-	comparePass := helpers.ComparePass([]byte(User.Password), []byte(password))
-
-	if !comparePass {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Unauthorized",
-			"message": "invalid email/password",
-		})
-		return
-	}
-
-	token := helpers.GenerateToken(User.ID, User.Email)
-
-	c.JSON(http.StatusCreated, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
 }
