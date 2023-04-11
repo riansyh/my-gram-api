@@ -1,6 +1,6 @@
 # MyGram API
 
-This project is a final project submission for Fresh Graduate Academy Scalable Web Service with Golang pelatihan.
+This project is a final submission for the Scalable Web Service with Golang training program at the Fresh Graduate Academy by Kominfo.
 
 ## Tech Stack
 
