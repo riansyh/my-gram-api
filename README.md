@@ -21,13 +21,13 @@ Golang, Gin Gonic, GORM, PostgreSQL, go-jwt, Railway(for deployment), Swagger (A
 Clone the project
 
 ```bash
-  git clone https://github.com/riansyh/quiz-dot-challenge.git
+  git clone https://github.com/riansyh/my-gram-api.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd quiz-dot-challenge
+  cd my-gram-api
 ```
 
 Install dependencies
@@ -36,7 +36,7 @@ Install dependencies
   go mod install
 ```
 
-Configure the environment variable, consists of:
+Prepare the database using PostgreSQL and configure the environment variable, consists of:
 
 ```bash
   PGHOST=<fill with PostgreSQL host>
