@@ -29,7 +29,6 @@ func StartApp() *gin.Engine {
 
 	userRouter := r.Group("/users")
 	{
-		// Initialize repositories, services, and controllers
 		userRepository := repositories.NewUserRepository(database.GetDB())
 		userService := services.NewUserService(userRepository)
 		userController := controllers.NewUserController(userService)
@@ -42,17 +41,21 @@ func StartApp() *gin.Engine {
 
 	socialMediaRouter := r.Group("/social-medias")
 	{
+		socialMediaRepo := repositories.NewSocialMediaRepository(database.GetDB())
+		socialMediaService := services.NewSocialMediaService(socialMediaRepo)
+		socialMediaController := controllers.NewSocialMediaController(socialMediaService)
+
 		socialMediaRouter.Use(middlewares.Authentication())
 		// Create
-		socialMediaRouter.POST("/", controllers.CreateSocialMedia)
+		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
 		// Read All
-		socialMediaRouter.GET("/", controllers.GetAllSocialMedias)
+		socialMediaRouter.GET("/", socialMediaController.GetAllSocialMedia)
 		// Read
-		socialMediaRouter.GET("/:socialMediaId", controllers.GetSocialMediaById)
+		socialMediaRouter.GET("/:socialMediaId", socialMediaController.GetSocialMediaById)
 		// Update
-		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), controllers.UpdateSocialMedia)
+		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaController.UpdateSocialMedia)
 		// Delete
-		socialMediaRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), controllers.DeleteSocialMediaById)
+		socialMediaRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaController.DeleteSocialMedia)
 	}
 
 	photoRouter := r.Group("/photos")

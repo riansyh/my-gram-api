@@ -1,15 +1,31 @@
 package controllers
 
 import (
-	"my-gram/database"
 	"my-gram/helpers"
 	"my-gram/models"
+	"my-gram/services"
 	"net/http"
 	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
+type SocialMediaController interface {
+	CreateSocialMedia(c *gin.Context)
+	UpdateSocialMedia(c *gin.Context)
+	DeleteSocialMedia(c *gin.Context)
+	GetSocialMediaById(c *gin.Context)
+	GetAllSocialMedia(c *gin.Context)
+}
+
+type socialMediaController struct {
+	service services.SocialMediaService
+}
+
+func NewSocialMediaController(service services.SocialMediaService) *socialMediaController {
+	return &socialMediaController{service: service}
+}
 
 // CreateSocialMedia godoc
 // @Summary Add SocialMedia
@@ -19,13 +35,12 @@ import (
 // @Produce json
 // @Success 201 {object} models.SocialMedia
 // @Router /social-medias [post]
-func CreateSocialMedia(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *socialMediaController) CreateSocialMedia(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
 	SocialMedia := models.SocialMedia{}
-	userID := uint(userData["id"].(float64))
+	SocialMedia.UserID = uint(userID)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&SocialMedia)
@@ -33,9 +48,7 @@ func CreateSocialMedia(c *gin.Context) {
 		c.ShouldBind(&SocialMedia)
 	}
 
-	SocialMedia.UserID = userID
-
-	err := db.Debug().Create(&SocialMedia).Error
+	err := s.service.CreateSocialMedia(&SocialMedia)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -59,14 +72,15 @@ func CreateSocialMedia(c *gin.Context) {
 // @Param id path int true "Id of the social media"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias/{id} [put]
-func UpdateSocialMedia(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *socialMediaController) UpdateSocialMedia(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
-	SocialMedia := models.SocialMedia{}
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
+	SocialMedia := models.SocialMedia{}
 	socialMediaId, _ := strconv.Atoi(c.Param("socialMediaId"))
-	userID := uint(userData["id"].(float64))
+
+	SocialMedia.UserID = uint(userID)
+	SocialMedia.ID = uint(socialMediaId)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&SocialMedia)
@@ -74,10 +88,7 @@ func UpdateSocialMedia(c *gin.Context) {
 		c.ShouldBind(&SocialMedia)
 	}
 
-	SocialMedia.UserID = userID
-	SocialMedia.ID = uint(socialMediaId)
-
-	err := db.Model(&SocialMedia).Where("id = ?", socialMediaId).Updates(models.SocialMedia{Name: SocialMedia.Name, SocialMediaUrl: SocialMedia.SocialMediaUrl}).Error
+	err := s.service.UpdateSocialMedia(&SocialMedia, uint(userID), uint(socialMediaId))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -101,18 +112,17 @@ func UpdateSocialMedia(c *gin.Context) {
 // @Param id path int true "Id of the social media"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias/{id} [get]
-func GetSocialMediaById(c *gin.Context) {
-	db := database.GetDB()
+func (s *socialMediaController) GetSocialMediaById(c *gin.Context) {
 	userData := c.MustGet("userData").(jwt.MapClaims)
-	SocialMedia := models.SocialMedia{}
 
+	SocialMedia := models.SocialMedia{}
 	socialMediaId, _ := strconv.Atoi(c.Param("socialMediaId"))
 	userID := uint(userData["id"].(float64))
 
 	SocialMedia.UserID = userID
 	SocialMedia.ID = uint(socialMediaId)
 
-	err := db.First(&SocialMedia, "id = ?", socialMediaId).Error
+	socmed, err := s.service.GetSocialMediaById(SocialMedia.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -122,7 +132,7 @@ func GetSocialMediaById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, SocialMedia)
+	c.JSON(http.StatusOK, socmed)
 }
 
 // DeleteSocialMedia godoc
@@ -136,38 +146,33 @@ func GetSocialMediaById(c *gin.Context) {
 // @Param id path int true "Id of the social media"
 // @Success 200 {string} string "SocialMedia successfully deleted"
 // @Router /social-medias/{id} [delete]
-func DeleteSocialMediaById(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *socialMediaController) DeleteSocialMedia(c *gin.Context) {
+	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
+
 	SocialMedia := models.SocialMedia{}
-
 	socialMediaId, _ := strconv.Atoi(c.Param("socialMediaId"))
-	userID := uint(userData["id"].(float64))
 
-	SocialMedia.UserID = userID
+	SocialMedia.UserID = uint(userID)
 	SocialMedia.ID = uint(socialMediaId)
 
-	result := db.Where("id = ?", socialMediaId).Delete(&SocialMedia)
-
-	if result.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Data not found",
-			"message": "Data with selected id is not found",
-		})
-		return
+	if contentType == appJSON {
+		c.ShouldBindJSON(&SocialMedia)
+	} else {
+		c.ShouldBind(&SocialMedia)
 	}
 
-	if result.Error != nil {
+	err := s.service.DeleteSocialMedia(&SocialMedia, uint(userID), uint(socialMediaId))
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
-			"message": result.Error.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Social Media successfully deleted",
-	})
+	c.JSON(http.StatusOK, SocialMedia)
 }
 
 // GetAllSocialMedia godoc
@@ -180,11 +185,8 @@ func DeleteSocialMediaById(c *gin.Context) {
 // @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias [get]
-func GetAllSocialMedias(c *gin.Context) {
-	db := database.GetDB()
-	products := []models.SocialMedia{}
-
-	err := db.Find(&products).Error
+func (s *socialMediaController) GetAllSocialMedia(c *gin.Context) {
+	result, err := s.service.GetAllSocialMedia()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -194,5 +196,5 @@ func GetAllSocialMedias(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, products)
+	c.JSON(http.StatusOK, result)
 }
