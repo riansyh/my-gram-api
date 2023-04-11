@@ -1,0 +1,490 @@
+basePath: /
+definitions:
+  controllers.jwtResponse:
+    properties:
+      jwt:
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      photo:
+        $ref: '#/definitions/models.Photo'
+      photo_id:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.Photo:
+    properties:
+      caption:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      photo_url:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.SocialMedia:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      social_media_url:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      age:
+        type: integer
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      photos:
+        items:
+          $ref: '#/definitions/models.Photo'
+        type: array
+      social_medias:
+        items:
+          $ref: '#/definitions/models.SocialMedia'
+        type: array
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact:
+    email: rianfebriansyah22@gmail.com
+    name: Rian Febriansyah
+  description: This service allows users to store their photos and make comments on
+    other users' photos. It was created as a final project for FGA Scalable Web Service
+    with Golang.
+  title: MyGram API
+  version: "1.0"
+paths:
+  /comments:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Get All Comments
+      tags:
+      - Comment
+    post:
+      consumes:
+      - application/json
+      description: Add a comment to a photo
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comment'
+      summary: Add Comment
+      tags:
+      - Comment
+  /comments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment successfully deleted
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a Comment
+      tags:
+      - Comment
+    get:
+      consumes:
+      - application/json
+      description: Show a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Get Comment
+      tags:
+      - Comment
+    put:
+      consumes:
+      - application/json
+      description: Update a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the comment
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Update Comment
+      tags:
+      - Comment
+  /photos:
+    get:
+      consumes:
+      - application/json
+      description: Get all photos
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Photo'
+      security:
+      - BearerAuth: []
+      summary: Get All Photos
+      tags:
+      - Photo
+    post:
+      consumes:
+      - application/json
+      description: Add a photo to a photo
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Photo'
+      summary: Add Photo
+      tags:
+      - Photo
+  /photos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a photo using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the photo
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Photo successfully deleted
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a Photo
+      tags:
+      - Photo
+    get:
+      consumes:
+      - application/json
+      description: Show a photo using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the photo
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Photo'
+      security:
+      - BearerAuth: []
+      summary: Get Photo
+      tags:
+      - Photo
+    put:
+      consumes:
+      - application/json
+      description: Update a photo using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the photo
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Photo'
+      security:
+      - BearerAuth: []
+      summary: Update Photo
+      tags:
+      - Photo
+  /social-medias:
+    get:
+      consumes:
+      - application/json
+      description: Get all social media
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SocialMedia'
+      security:
+      - BearerAuth: []
+      summary: Get All Social Medias
+      tags:
+      - SocialMedia
+    post:
+      consumes:
+      - application/json
+      description: Add a comment to a photo
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SocialMedia'
+      summary: Add SocialMedia
+      tags:
+      - SocialMedia
+  /social-medias/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the social media
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: SocialMedia successfully deleted
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a SocialMedia
+      tags:
+      - SocialMedia
+    get:
+      consumes:
+      - application/json
+      description: Show a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the social media
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SocialMedia'
+      security:
+      - BearerAuth: []
+      summary: Get SocialMedia
+      tags:
+      - SocialMedia
+    put:
+      consumes:
+      - application/json
+      description: Update a comment using id
+      parameters:
+      - description: Bearer {JWT token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Id of the social media
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SocialMedia'
+      security:
+      - BearerAuth: []
+      summary: Update SocialMedia
+      tags:
+      - SocialMedia
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user using email and password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.jwtResponse'
+      summary: Login using user account
+      tags:
+      - User
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user using email
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: User registration
+      tags:
+      - User
+swagger: "2.0"

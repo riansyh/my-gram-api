@@ -11,6 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateSocialMedia godoc
+// @Summary Add SocialMedia
+// @Description Add a comment to a photo
+// @Tags SocialMedia
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.SocialMedia
+// @Router /social-medias [post]
 func CreateSocialMedia(c *gin.Context) {
 	db := database.GetDB()
 	userData := c.MustGet("userData").(jwt.MapClaims)
@@ -40,6 +48,17 @@ func CreateSocialMedia(c *gin.Context) {
 	c.JSON(http.StatusCreated, SocialMedia)
 }
 
+// UpdateSocialMedia godoc
+// @Summary Update SocialMedia
+// @Description Update a comment using id
+// @Tags SocialMedia
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer {JWT token}"
+// @Param id path int true "Id of the social media"
+// @Success 200 {object} models.SocialMedia
+// @Router /social-medias/{id} [put]
 func UpdateSocialMedia(c *gin.Context) {
 	db := database.GetDB()
 	userData := c.MustGet("userData").(jwt.MapClaims)
@@ -71,6 +90,17 @@ func UpdateSocialMedia(c *gin.Context) {
 	c.JSON(http.StatusOK, SocialMedia)
 }
 
+// GetSocialMedia godoc
+// @Summary Get SocialMedia
+// @Description Show a comment using id
+// @Tags SocialMedia
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer {JWT token}"
+// @Param id path int true "Id of the social media"
+// @Success 200 {object} models.SocialMedia
+// @Router /social-medias/{id} [get]
 func GetSocialMediaById(c *gin.Context) {
 	db := database.GetDB()
 	userData := c.MustGet("userData").(jwt.MapClaims)
@@ -95,6 +125,17 @@ func GetSocialMediaById(c *gin.Context) {
 	c.JSON(http.StatusOK, SocialMedia)
 }
 
+// DeleteSocialMedia godoc
+// @Summary Delete a SocialMedia
+// @Description Delete a comment using id
+// @Tags SocialMedia
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer {JWT token}"
+// @Param id path int true "Id of the social media"
+// @Success 200 {string} string "SocialMedia successfully deleted"
+// @Router /social-medias/{id} [delete]
 func DeleteSocialMediaById(c *gin.Context) {
 	db := database.GetDB()
 	userData := c.MustGet("userData").(jwt.MapClaims)
@@ -129,6 +170,16 @@ func DeleteSocialMediaById(c *gin.Context) {
 	})
 }
 
+// GetAllSocialMedia godoc
+// @Summary Get All Social Medias
+// @Description Get all social media
+// @Tags SocialMedia
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer {JWT token}"
+// @Success 200 {object} models.SocialMedia
+// @Router /social-medias [get]
 func GetAllSocialMedias(c *gin.Context) {
 	db := database.GetDB()
 	products := []models.SocialMedia{}
