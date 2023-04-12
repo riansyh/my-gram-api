@@ -31,7 +31,7 @@ func (r *socialMediaRepository) UpdateSocialMedia(socialMedia *models.SocialMedi
 }
 
 func (r *socialMediaRepository) DeleteSocialMedia(socialMedia *models.SocialMedia) error {
-	return r.db.Model(socialMedia).Delete(models.SocialMedia{Name: socialMedia.Name, SocialMediaUrl: socialMedia.SocialMediaUrl}).Error
+	return r.db.Delete(socialMedia, "id = ?", socialMedia.ID).Error
 }
 
 func (r *socialMediaRepository) GetSocialMediaById(id uint, userId uint) (*models.SocialMedia, error) {

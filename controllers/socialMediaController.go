@@ -172,7 +172,9 @@ func (s *socialMediaController) DeleteSocialMedia(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, SocialMedia)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Social media successfully deleted",
+	})
 }
 
 // GetAllSocialMedia godoc
