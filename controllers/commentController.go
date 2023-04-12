@@ -1,15 +1,31 @@
 package controllers
 
 import (
-	"my-gram/database"
 	"my-gram/helpers"
 	"my-gram/models"
+	"my-gram/services"
 	"net/http"
 	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
+type CommentController interface {
+	CreateComment(c *gin.Context)
+	UpdateComment(c *gin.Context)
+	DeleteComment(c *gin.Context)
+	GetCommentById(c *gin.Context)
+	GetAllComment(c *gin.Context)
+}
+
+type commentController struct {
+	service services.CommentService
+}
+
+func NewCommentController(service services.CommentService) *commentController {
+	return &commentController{service: service}
+}
 
 // CreateComment godoc
 // @Summary Add Comment
@@ -19,14 +35,12 @@ import (
 // @Produce json
 // @Success 201 {object} models.Comment
 // @Router /comments [post]
-func CreateComment(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *commentController) CreateComment(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
 	Comment := models.Comment{}
-	Photo := models.Photo{}
-	userID := uint(userData["id"].(float64))
+	Comment.UserID = uint(userID)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Comment)
@@ -34,19 +48,7 @@ func CreateComment(c *gin.Context) {
 		c.ShouldBind(&Comment)
 	}
 
-	Comment.UserID = userID
-
-	err := db.First(&Photo, "id = ?", Comment.PhotoId).Error
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Bad Request",
-			"message": "Photo not found",
-		})
-		return
-	}
-
-	err = db.Debug().Create(&Comment).Error
+	err := s.service.CreateComment(&Comment, uint(userID))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -70,14 +72,15 @@ func CreateComment(c *gin.Context) {
 // @Param id path int true "Id of the comment"
 // @Success 200 {object} models.Comment
 // @Router /comments/{id} [put]
-func UpdateComment(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *commentController) UpdateComment(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
-	Comment := models.Comment{}
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
+	Comment := models.Comment{}
 	commentId, _ := strconv.Atoi(c.Param("commentId"))
-	userID := uint(userData["id"].(float64))
+
+	Comment.UserID = uint(userID)
+	Comment.ID = uint(commentId)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Comment)
@@ -85,12 +88,7 @@ func UpdateComment(c *gin.Context) {
 		c.ShouldBind(&Comment)
 	}
 
-	Comment.UserID = userID
-	Comment.ID = uint(commentId)
-
-	err := db.Model(&Comment).
-		Where("id = ?", commentId).
-		Updates(models.Comment{Message: Comment.Message}).Error
+	err := s.service.UpdateComment(&Comment, uint(userID), uint(commentId))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -114,18 +112,17 @@ func UpdateComment(c *gin.Context) {
 // @Param id path int true "Id of the comment"
 // @Success 200 {object} models.Comment
 // @Router /comments/{id} [get]
-func GetCommentById(c *gin.Context) {
-	db := database.GetDB()
+func (s *commentController) GetCommentById(c *gin.Context) {
 	userData := c.MustGet("userData").(jwt.MapClaims)
-	Comment := models.Comment{}
 
+	Comment := models.Comment{}
 	commentId, _ := strconv.Atoi(c.Param("commentId"))
 	userID := uint(userData["id"].(float64))
 
 	Comment.UserID = userID
 	Comment.ID = uint(commentId)
 
-	err := db.First(&Comment, "id = ?", commentId).Error
+	socmed, err := s.service.GetCommentById(Comment.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -135,7 +132,7 @@ func GetCommentById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Comment)
+	c.JSON(http.StatusOK, socmed)
 }
 
 // DeleteComment godoc
@@ -149,31 +146,28 @@ func GetCommentById(c *gin.Context) {
 // @Param id path int true "Id of the comment"
 // @Success 200 {string} string "Comment successfully deleted"
 // @Router /comments/{id} [delete]
-func DeleteCommentById(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *commentController) DeleteComment(c *gin.Context) {
+	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
+
 	Comment := models.Comment{}
-
 	commentId, _ := strconv.Atoi(c.Param("commentId"))
-	userID := uint(userData["id"].(float64))
 
-	Comment.UserID = userID
+	Comment.UserID = uint(userID)
 	Comment.ID = uint(commentId)
 
-	result := db.Where("id = ?", commentId).Delete(&Comment)
-
-	if result.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Data not found",
-			"message": "Data with selected id is not found",
-		})
-		return
+	if contentType == appJSON {
+		c.ShouldBindJSON(&Comment)
+	} else {
+		c.ShouldBind(&Comment)
 	}
 
-	if result.Error != nil {
+	err := s.service.DeleteComment(&Comment, uint(userID), uint(commentId))
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
-			"message": result.Error.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
@@ -193,11 +187,8 @@ func DeleteCommentById(c *gin.Context) {
 // @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.Comment
 // @Router /comments [get]
-func GetAllComments(c *gin.Context) {
-	db := database.GetDB()
-	products := []models.Comment{}
-
-	err := db.Find(&products).Error
+func (s *commentController) GetAllComment(c *gin.Context) {
+	result, err := s.service.GetAllComment()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -207,5 +198,5 @@ func GetAllComments(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, products)
+	c.JSON(http.StatusOK, result)
 }

@@ -79,17 +79,23 @@ func StartApp() *gin.Engine {
 
 	commentRouter := r.Group("/comments")
 	{
+		commentRepo := repositories.NewCommentRepository(database.GetDB())
+		photoRepo := repositories.NewPhotoRepository(database.GetDB())
+
+		commentService := services.NewCommentService(commentRepo, photoRepo)
+		commentController := controllers.NewCommentController(commentService)
+
 		commentRouter.Use(middlewares.Authentication())
 		// Create
-		commentRouter.POST("/", controllers.CreateComment)
+		commentRouter.POST("/", commentController.CreateComment)
 		// Read All
-		commentRouter.GET("/", controllers.GetAllComments)
+		commentRouter.GET("/", commentController.GetAllComment)
 		// Read
-		commentRouter.GET("/:commentId", controllers.GetCommentById)
+		commentRouter.GET("/:commentId", commentController.GetCommentById)
 		// Update
-		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), controllers.UpdateComment)
+		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), commentController.UpdateComment)
 		// Delete
-		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), controllers.DeleteCommentById)
+		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), commentController.DeleteComment)
 	}
 
 	return r
