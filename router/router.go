@@ -29,15 +29,27 @@ import (
 // @host localhost:8081
 // @BasePath /
 func StartApp() *gin.Engine {
-	r := gin.Default()
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	userRepository := repositories.NewUserRepository(database.GetDB())
+	userService := services.NewUserService(userRepository)
+	userController := controllers.NewUserController(userService)
 
+	socialMediaRepo := repositories.NewSocialMediaRepository(database.GetDB())
+	socialMediaService := services.NewSocialMediaService(socialMediaRepo)
+	socialMediaController := controllers.NewSocialMediaController(socialMediaService)
+
+	photoRepo := repositories.NewPhotoRepository(database.GetDB())
+	photoService := services.NewPhotoService(photoRepo)
+	photoController := controllers.NewPhotoController(photoService)
+
+	commentRepo := repositories.NewCommentRepository(database.GetDB())
+	commentService := services.NewCommentService(commentRepo, photoRepo)
+	commentController := controllers.NewCommentController(commentService)
+
+	r := gin.Default()
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	userRouter := r.Group("/users")
 	{
-		userRepository := repositories.NewUserRepository(database.GetDB())
-		userService := services.NewUserService(userRepository)
-		userController := controllers.NewUserController(userService)
-
 		// Create
 		userRouter.POST("/register", userController.Register)
 		// Login
@@ -46,10 +58,6 @@ func StartApp() *gin.Engine {
 
 	socialMediaRouter := r.Group("/social-medias")
 	{
-		socialMediaRepo := repositories.NewSocialMediaRepository(database.GetDB())
-		socialMediaService := services.NewSocialMediaService(socialMediaRepo)
-		socialMediaController := controllers.NewSocialMediaController(socialMediaService)
-
 		socialMediaRouter.Use(middlewares.Authentication())
 		// Create
 		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
@@ -65,10 +73,6 @@ func StartApp() *gin.Engine {
 
 	photoRouter := r.Group("/photos")
 	{
-		photoRepo := repositories.NewPhotoRepository(database.GetDB())
-		photoService := services.NewPhotoService(photoRepo)
-		photoController := controllers.NewPhotoController(photoService)
-
 		photoRouter.Use(middlewares.Authentication())
 		// Create
 		photoRouter.POST("/", photoController.CreatePhoto)
@@ -84,12 +88,6 @@ func StartApp() *gin.Engine {
 
 	commentRouter := r.Group("/comments")
 	{
-		commentRepo := repositories.NewCommentRepository(database.GetDB())
-		photoRepo := repositories.NewPhotoRepository(database.GetDB())
-
-		commentService := services.NewCommentService(commentRepo, photoRepo)
-		commentController := controllers.NewCommentController(commentService)
-
 		commentRouter.Use(middlewares.Authentication())
 		// Create
 		commentRouter.POST("/", commentController.CreateComment)
