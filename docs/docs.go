@@ -10,10 +10,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "Rian Febriansyah",
-            "email": "rianfebriansyah22@gmail.com"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -226,6 +223,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -284,6 +288,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -324,6 +335,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Photo",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -368,6 +386,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -410,6 +435,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get All Social Medias",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -470,6 +502,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -510,6 +549,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update SocialMedia",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -554,6 +600,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -590,6 +643,17 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Login using user account",
+                "parameters": [
+                    {
+                        "description": "login info, email and password",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -613,6 +677,17 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "User registration",
+                "parameters": [
+                    {
+                        "description": "register",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -766,12 +841,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8081",
-	BasePath:         "/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "MyGram API",
-	Description:      "This service allows users to store their photos and make comments on other users' photos. It was created as a final project for FGA Scalable Web Service with Golang.",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

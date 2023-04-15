@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   controllers.jwtResponse:
     properties:
@@ -89,16 +88,8 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8081
 info:
-  contact:
-    email: rianfebriansyah22@gmail.com
-    name: Rian Febriansyah
-  description: This service allows users to store their photos and make comments on
-    other users' photos. It was created as a final project for FGA Scalable Web Service
-    with Golang.
-  title: MyGram API
-  version: "1.0"
+  contact: {}
 paths:
   /comments:
     get:
@@ -225,6 +216,11 @@ paths:
       - application/json
       description: Get all photos
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -262,6 +258,11 @@ paths:
       - application/json
       description: Delete a photo using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -289,6 +290,11 @@ paths:
       - application/json
       description: Show a photo using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -316,6 +322,11 @@ paths:
       - application/json
       description: Update a photo using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -344,6 +355,11 @@ paths:
       - application/json
       description: Get all social media
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -381,6 +397,11 @@ paths:
       - application/json
       description: Delete a comment using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -408,6 +429,11 @@ paths:
       - application/json
       description: Show a comment using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -435,6 +461,11 @@ paths:
       - application/json
       description: Update a comment using id
       parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Bearer {JWT token}
         in: header
         name: Authorization
@@ -462,6 +493,13 @@ paths:
       consumes:
       - application/json
       description: Authenticate user using email and password
+      parameters:
+      - description: login info, email and password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
@@ -477,6 +515,13 @@ paths:
       consumes:
       - application/json
       description: Register user using email
+      parameters:
+      - description: register
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:

@@ -1,16 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This service allows users to store their photos and make comments on other users' photos. It was created as a final project for FGA Scalable Web Service with Golang.",
-        "title": "MyGram API",
-        "contact": {
-            "name": "Rian Febriansyah",
-            "email": "rianfebriansyah22@gmail.com"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8081",
-    "basePath": "/",
     "paths": {
         "/comments": {
             "get": {
@@ -219,6 +211,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -277,6 +276,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -317,6 +323,13 @@
                 ],
                 "summary": "Update Photo",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -361,6 +374,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -403,6 +423,13 @@
                 ],
                 "summary": "Get All Social Medias",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -463,6 +490,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -503,6 +537,13 @@
                 ],
                 "summary": "Update SocialMedia",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Bearer {JWT token}",
@@ -547,6 +588,13 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer {JWT token}",
                         "name": "Authorization",
                         "in": "header",
@@ -583,6 +631,17 @@
                     "User"
                 ],
                 "summary": "Login using user account",
+                "parameters": [
+                    {
+                        "description": "login info, email and password",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -606,6 +665,17 @@
                     "User"
                 ],
                 "summary": "User registration",
+                "parameters": [
+                    {
+                        "description": "register",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",

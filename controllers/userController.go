@@ -32,6 +32,7 @@ func NewUserController(userService services.UserService) *userController {
 // @Tags User
 // @Accept json
 // @Produce json
+// @Param request body models.User true "register"
 // @Success 201 {object} models.User
 // @Router /users/register [post]
 func (uc *userController) Register(c *gin.Context) {
@@ -68,6 +69,7 @@ func (uc *userController) Register(c *gin.Context) {
 // @Tags User
 // @Accept json
 // @Produce json
+// @Param request body models.User true "login info, email and password"
 // @Success 200 {object} jwtResponse
 // @Router /users/login [post]
 func (uc *userController) Login(c *gin.Context) {
