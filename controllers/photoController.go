@@ -58,7 +58,9 @@ func (s *photoController) CreatePhoto(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Photo)
+	c.JSON(http.StatusCreated, gin.H{
+		"data": Photo,
+	})
 }
 
 // UpdatePhoto godoc
@@ -98,7 +100,9 @@ func (s *photoController) UpdatePhoto(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Photo)
+	c.JSON(http.StatusOK, gin.H{
+		"data": Photo,
+	})
 }
 
 // GetPhoto godoc
@@ -122,7 +126,7 @@ func (s *photoController) GetPhotoById(c *gin.Context) {
 	Photo.UserID = userID
 	Photo.ID = uint(photoId)
 
-	socmed, err := s.service.GetPhotoById(Photo.ID, userID)
+	result, err := s.service.GetPhotoById(Photo.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -132,7 +136,9 @@ func (s *photoController) GetPhotoById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, socmed)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }
 
 // DeletePhoto godoc
@@ -198,5 +204,7 @@ func (s *photoController) GetAllPhoto(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }

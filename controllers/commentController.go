@@ -58,7 +58,9 @@ func (s *commentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Comment)
+	c.JSON(http.StatusCreated, gin.H{
+		"data": Comment,
+	})
 }
 
 // UpdateComment godoc
@@ -98,7 +100,9 @@ func (s *commentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Comment)
+	c.JSON(http.StatusOK, gin.H{
+		"data": Comment,
+	})
 }
 
 // GetComment godoc
@@ -122,7 +126,7 @@ func (s *commentController) GetCommentById(c *gin.Context) {
 	Comment.UserID = userID
 	Comment.ID = uint(commentId)
 
-	socmed, err := s.service.GetCommentById(Comment.ID, userID)
+	result, err := s.service.GetCommentById(Comment.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -132,7 +136,9 @@ func (s *commentController) GetCommentById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, socmed)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }
 
 // DeleteComment godoc
@@ -198,5 +204,7 @@ func (s *commentController) GetAllComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }

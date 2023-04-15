@@ -58,7 +58,9 @@ func (s *socialMediaController) CreateSocialMedia(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, SocialMedia)
+	c.JSON(http.StatusCreated, gin.H{
+		"data": SocialMedia,
+	})
 }
 
 // UpdateSocialMedia godoc
@@ -98,7 +100,9 @@ func (s *socialMediaController) UpdateSocialMedia(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, SocialMedia)
+	c.JSON(http.StatusOK, gin.H{
+		"data": SocialMedia,
+	})
 }
 
 // GetSocialMedia godoc
@@ -122,7 +126,7 @@ func (s *socialMediaController) GetSocialMediaById(c *gin.Context) {
 	SocialMedia.UserID = userID
 	SocialMedia.ID = uint(socialMediaId)
 
-	socmed, err := s.service.GetSocialMediaById(SocialMedia.ID, userID)
+	result, err := s.service.GetSocialMediaById(SocialMedia.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -132,7 +136,9 @@ func (s *socialMediaController) GetSocialMediaById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, socmed)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }
 
 // DeleteSocialMedia godoc
@@ -198,5 +204,7 @@ func (s *socialMediaController) GetAllSocialMedia(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }
