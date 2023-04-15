@@ -21,6 +21,11 @@ import (
 // @contact.name Rian Febriansyah
 // @contact.email rianfebriansyah22@gmail.com
 // @contact.website https://riansyh.tech
+
+// @securityDefinitions.apikey BearerAuth
+// @in header -> Bearer
+// @name Authorization
+
 // @host localhost:8081
 // @BasePath /
 func StartApp() *gin.Engine {

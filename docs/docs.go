@@ -10,7 +10,10 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Rian Febriansyah",
+            "email": "rianfebriansyah22@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -34,15 +37,6 @@ const docTemplate = `{
                     "Comment"
                 ],
                 "summary": "Get All Comments",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -53,6 +47,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a comment to a photo",
                 "consumes": [
                     "application/json"
@@ -64,6 +63,17 @@ const docTemplate = `{
                     "Comment"
                 ],
                 "summary": "Add Comment",
+                "parameters": [
+                    {
+                        "description": "comment",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -93,13 +103,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get Comment",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the comment",
@@ -136,11 +139,13 @@ const docTemplate = `{
                 "summary": "Update Comment",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "comment",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     {
                         "type": "integer",
@@ -178,13 +183,6 @@ const docTemplate = `{
                 "summary": "Delete a Comment",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Id of the comment",
                         "name": "id",
@@ -220,22 +218,6 @@ const docTemplate = `{
                     "Photo"
                 ],
                 "summary": "Get All Photos",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -246,6 +228,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a photo to a photo",
                 "consumes": [
                     "application/json"
@@ -257,6 +244,17 @@ const docTemplate = `{
                     "Photo"
                 ],
                 "summary": "Add Photo",
+                "parameters": [
+                    {
+                        "description": "photo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Photo"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -286,20 +284,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get Photo",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the photo",
@@ -336,18 +320,13 @@ const docTemplate = `{
                 "summary": "Update Photo",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "photo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Photo"
+                        }
                     },
                     {
                         "type": "integer",
@@ -385,20 +364,6 @@ const docTemplate = `{
                 "summary": "Delete a Photo",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Id of the photo",
                         "name": "id",
@@ -434,22 +399,6 @@ const docTemplate = `{
                     "SocialMedia"
                 ],
                 "summary": "Get All Social Medias",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -460,6 +409,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a comment to a photo",
                 "consumes": [
                     "application/json"
@@ -471,6 +425,17 @@ const docTemplate = `{
                     "SocialMedia"
                 ],
                 "summary": "Add SocialMedia",
+                "parameters": [
+                    {
+                        "description": "Social Media",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SocialMedia"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -500,20 +465,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get SocialMedia",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the social media",
@@ -550,18 +501,13 @@ const docTemplate = `{
                 "summary": "Update SocialMedia",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "Social Media",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SocialMedia"
+                        }
                     },
                     {
                         "type": "integer",
@@ -598,20 +544,6 @@ const docTemplate = `{
                 ],
                 "summary": "Delete a SocialMedia",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the social media",
@@ -836,17 +768,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header -\u003e Bearer"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:8081",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "MyGram API",
+	Description:      "This service allows users to store their photos and make comments on other users' photos. It was created as a final project for FGA Scalable Web Service with Golang.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

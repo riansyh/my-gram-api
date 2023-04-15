@@ -33,6 +33,8 @@ func NewPhotoController(service services.PhotoService) *photoController {
 // @Tags Photo
 // @Accept json
 // @Produce json
+// @Security BearerAuth
+// @Param request body models.Photo true "photo"
 // @Success 201 {object} models.Photo
 // @Router /photos [post]
 func (s *photoController) CreatePhoto(c *gin.Context) {
@@ -70,7 +72,7 @@ func (s *photoController) CreatePhoto(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
+// @Param request body models.Photo true "photo"
 // @Param id path int true "Id of the photo"
 // @Success 200 {object} models.Photo
 // @Router /photos/{id} [put]
@@ -112,7 +114,6 @@ func (s *photoController) UpdatePhoto(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the photo"
 // @Success 200 {object} models.Photo
 // @Router /photos/{id} [get]
@@ -148,7 +149,6 @@ func (s *photoController) GetPhotoById(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the photo"
 // @Success 200 {string} string "Photo successfully deleted"
 // @Router /photos/{id} [delete]
@@ -190,7 +190,6 @@ func (s *photoController) DeletePhoto(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.Photo
 // @Router /photos [get]
 func (s *photoController) GetAllPhoto(c *gin.Context) {

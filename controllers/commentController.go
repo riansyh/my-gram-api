@@ -33,6 +33,8 @@ func NewCommentController(service services.CommentService) *commentController {
 // @Tags Comment
 // @Accept json
 // @Produce json
+// @Security BearerAuth
+// @Param request body models.Comment true "comment"
 // @Success 201 {object} models.Comment
 // @Router /comments [post]
 func (s *commentController) CreateComment(c *gin.Context) {
@@ -70,7 +72,7 @@ func (s *commentController) CreateComment(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
+// @Param request body models.Comment true "comment"
 // @Param id path int true "Id of the comment"
 // @Success 200 {object} models.Comment
 // @Router /comments/{id} [put]
@@ -112,7 +114,6 @@ func (s *commentController) UpdateComment(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the comment"
 // @Success 200 {object} models.Comment
 // @Router /comments/{id} [get]
@@ -148,7 +149,6 @@ func (s *commentController) GetCommentById(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the comment"
 // @Success 200 {string} string "Comment successfully deleted"
 // @Router /comments/{id} [delete]
@@ -190,7 +190,6 @@ func (s *commentController) DeleteComment(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.Comment
 // @Router /comments [get]
 func (s *commentController) GetAllComment(c *gin.Context) {

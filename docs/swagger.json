@@ -1,8 +1,16 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This service allows users to store their photos and make comments on other users' photos. It was created as a final project for FGA Scalable Web Service with Golang.",
+        "title": "MyGram API",
+        "contact": {
+            "name": "Rian Febriansyah",
+            "email": "rianfebriansyah22@gmail.com"
+        },
+        "version": "1.0"
     },
+    "host": "localhost:8081",
+    "basePath": "/",
     "paths": {
         "/comments": {
             "get": {
@@ -22,15 +30,6 @@
                     "Comment"
                 ],
                 "summary": "Get All Comments",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -41,6 +40,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a comment to a photo",
                 "consumes": [
                     "application/json"
@@ -52,6 +56,17 @@
                     "Comment"
                 ],
                 "summary": "Add Comment",
+                "parameters": [
+                    {
+                        "description": "comment",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -81,13 +96,6 @@
                 ],
                 "summary": "Get Comment",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the comment",
@@ -124,11 +132,13 @@
                 "summary": "Update Comment",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "comment",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     {
                         "type": "integer",
@@ -166,13 +176,6 @@
                 "summary": "Delete a Comment",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Id of the comment",
                         "name": "id",
@@ -208,22 +211,6 @@
                     "Photo"
                 ],
                 "summary": "Get All Photos",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -234,6 +221,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a photo to a photo",
                 "consumes": [
                     "application/json"
@@ -245,6 +237,17 @@
                     "Photo"
                 ],
                 "summary": "Add Photo",
+                "parameters": [
+                    {
+                        "description": "photo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Photo"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -274,20 +277,6 @@
                 ],
                 "summary": "Get Photo",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the photo",
@@ -324,18 +313,13 @@
                 "summary": "Update Photo",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "photo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Photo"
+                        }
                     },
                     {
                         "type": "integer",
@@ -373,20 +357,6 @@
                 "summary": "Delete a Photo",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Id of the photo",
                         "name": "id",
@@ -422,22 +392,6 @@
                     "SocialMedia"
                 ],
                 "summary": "Get All Social Medias",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -448,6 +402,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add a comment to a photo",
                 "consumes": [
                     "application/json"
@@ -459,6 +418,17 @@
                     "SocialMedia"
                 ],
                 "summary": "Add SocialMedia",
+                "parameters": [
+                    {
+                        "description": "Social Media",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SocialMedia"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -488,20 +458,6 @@
                 ],
                 "summary": "Get SocialMedia",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the social media",
@@ -538,18 +494,13 @@
                 "summary": "Update SocialMedia",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "Social Media",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SocialMedia"
+                        }
                     },
                     {
                         "type": "integer",
@@ -586,20 +537,6 @@
                 ],
                 "summary": "Delete a SocialMedia",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer {JWT token}",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Id of the social media",
@@ -823,6 +760,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header -\u003e Bearer"
         }
     }
 }

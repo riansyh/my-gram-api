@@ -33,6 +33,8 @@ func NewSocialMediaController(service services.SocialMediaService) *socialMediaC
 // @Tags SocialMedia
 // @Accept json
 // @Produce json
+// @Security BearerAuth
+// @Param request body models.SocialMedia true "Social Media"
 // @Success 201 {object} models.SocialMedia
 // @Router /social-medias [post]
 func (s *socialMediaController) CreateSocialMedia(c *gin.Context) {
@@ -70,7 +72,7 @@ func (s *socialMediaController) CreateSocialMedia(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
+// @Param request body models.SocialMedia true "Social Media"
 // @Param id path int true "Id of the social media"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias/{id} [put]
@@ -112,7 +114,6 @@ func (s *socialMediaController) UpdateSocialMedia(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the social media"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias/{id} [get]
@@ -148,7 +149,6 @@ func (s *socialMediaController) GetSocialMediaById(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Param id path int true "Id of the social media"
 // @Success 200 {string} string "SocialMedia successfully deleted"
 // @Router /social-medias/{id} [delete]
@@ -190,7 +190,6 @@ func (s *socialMediaController) DeleteSocialMedia(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.SocialMedia
 // @Router /social-medias [get]
 func (s *socialMediaController) GetAllSocialMedia(c *gin.Context) {
