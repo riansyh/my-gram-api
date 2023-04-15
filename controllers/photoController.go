@@ -1,15 +1,31 @@
 package controllers
 
 import (
-	"my-gram/database"
 	"my-gram/helpers"
 	"my-gram/models"
+	"my-gram/services"
 	"net/http"
 	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
+
+type PhotoController interface {
+	CreatePhoto(c *gin.Context)
+	UpdatePhoto(c *gin.Context)
+	DeletePhoto(c *gin.Context)
+	GetPhotoById(c *gin.Context)
+	GetAllPhoto(c *gin.Context)
+}
+
+type photoController struct {
+	service services.PhotoService
+}
+
+func NewPhotoController(service services.PhotoService) *photoController {
+	return &photoController{service: service}
+}
 
 // CreatePhoto godoc
 // @Summary Add Photo
@@ -19,13 +35,12 @@ import (
 // @Produce json
 // @Success 201 {object} models.Photo
 // @Router /photos [post]
-func CreatePhoto(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *photoController) CreatePhoto(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
 	Photo := models.Photo{}
-	userID := uint(userData["id"].(float64))
+	Photo.UserID = uint(userID)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Photo)
@@ -33,9 +48,7 @@ func CreatePhoto(c *gin.Context) {
 		c.ShouldBind(&Photo)
 	}
 
-	Photo.UserID = userID
-
-	err := db.Debug().Create(&Photo).Error
+	err := s.service.CreatePhoto(&Photo)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -59,14 +72,15 @@ func CreatePhoto(c *gin.Context) {
 // @Param id path int true "Id of the photo"
 // @Success 200 {object} models.Photo
 // @Router /photos/{id} [put]
-func UpdatePhoto(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *photoController) UpdatePhoto(c *gin.Context) {
 	contentType := helpers.GetContentType(c)
-	Photo := models.Photo{}
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
 
+	Photo := models.Photo{}
 	photoId, _ := strconv.Atoi(c.Param("photoId"))
-	userID := uint(userData["id"].(float64))
+
+	Photo.UserID = uint(userID)
+	Photo.ID = uint(photoId)
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Photo)
@@ -74,12 +88,7 @@ func UpdatePhoto(c *gin.Context) {
 		c.ShouldBind(&Photo)
 	}
 
-	Photo.UserID = userID
-	Photo.ID = uint(photoId)
-
-	err := db.Model(&Photo).
-		Where("id = ?", photoId).
-		Updates(models.Photo{Title: Photo.Title, Caption: Photo.Caption, PhotoUrl: Photo.PhotoUrl}).Error
+	err := s.service.UpdatePhoto(&Photo, uint(userID), uint(photoId))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -103,18 +112,17 @@ func UpdatePhoto(c *gin.Context) {
 // @Param id path int true "Id of the photo"
 // @Success 200 {object} models.Photo
 // @Router /photos/{id} [get]
-func GetPhotoById(c *gin.Context) {
-	db := database.GetDB()
+func (s *photoController) GetPhotoById(c *gin.Context) {
 	userData := c.MustGet("userData").(jwt.MapClaims)
-	Photo := models.Photo{}
 
+	Photo := models.Photo{}
 	photoId, _ := strconv.Atoi(c.Param("photoId"))
 	userID := uint(userData["id"].(float64))
 
 	Photo.UserID = userID
 	Photo.ID = uint(photoId)
 
-	err := db.First(&Photo, "id = ?", photoId).Error
+	socmed, err := s.service.GetPhotoById(Photo.ID, userID)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -124,7 +132,7 @@ func GetPhotoById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, Photo)
+	c.JSON(http.StatusOK, socmed)
 }
 
 // DeletePhoto godoc
@@ -138,31 +146,28 @@ func GetPhotoById(c *gin.Context) {
 // @Param id path int true "Id of the photo"
 // @Success 200 {string} string "Photo successfully deleted"
 // @Router /photos/{id} [delete]
-func DeletePhotoById(c *gin.Context) {
-	db := database.GetDB()
-	userData := c.MustGet("userData").(jwt.MapClaims)
+func (s *photoController) DeletePhoto(c *gin.Context) {
+	contentType := helpers.GetContentType(c)
+	userID := c.MustGet("userData").(jwt.MapClaims)["id"].(float64)
+
 	Photo := models.Photo{}
-
 	photoId, _ := strconv.Atoi(c.Param("photoId"))
-	userID := uint(userData["id"].(float64))
 
-	Photo.UserID = userID
+	Photo.UserID = uint(userID)
 	Photo.ID = uint(photoId)
 
-	result := db.Where("id = ?", photoId).Delete(&Photo)
-
-	if result.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Data not found",
-			"message": "Data with selected id is not found",
-		})
-		return
+	if contentType == appJSON {
+		c.ShouldBindJSON(&Photo)
+	} else {
+		c.ShouldBind(&Photo)
 	}
 
-	if result.Error != nil {
+	err := s.service.DeletePhoto(&Photo, uint(userID), uint(photoId))
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Bad Request",
-			"message": result.Error.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
@@ -182,11 +187,8 @@ func DeletePhotoById(c *gin.Context) {
 // @Param Authorization header string true "Bearer {JWT token}"
 // @Success 200 {object} models.Photo
 // @Router /photos [get]
-func GetAllPhotos(c *gin.Context) {
-	db := database.GetDB()
-	products := []models.Photo{}
-
-	err := db.Find(&products).Error
+func (s *photoController) GetAllPhoto(c *gin.Context) {
+	result, err := s.service.GetAllPhoto()
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -196,5 +198,5 @@ func GetAllPhotos(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, products)
+	c.JSON(http.StatusOK, result)
 }

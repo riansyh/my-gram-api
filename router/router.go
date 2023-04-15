@@ -2,7 +2,10 @@ package router
 
 import (
 	"my-gram/controllers"
+	"my-gram/database"
 	"my-gram/middlewares"
+	"my-gram/repositories"
+	"my-gram/services"
 
 	_ "my-gram/docs"
 
@@ -23,57 +26,76 @@ import (
 func StartApp() *gin.Engine {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	userRouter := r.Group("/users")
 	{
+		userRepository := repositories.NewUserRepository(database.GetDB())
+		userService := services.NewUserService(userRepository)
+		userController := controllers.NewUserController(userService)
+
 		// Create
-		userRouter.POST("/register", controllers.UserRegister)
+		userRouter.POST("/register", userController.Register)
 		// Login
-		userRouter.POST("/login", controllers.UserLogin)
+		userRouter.POST("/login", userController.Login)
 	}
 
 	socialMediaRouter := r.Group("/social-medias")
 	{
+		socialMediaRepo := repositories.NewSocialMediaRepository(database.GetDB())
+		socialMediaService := services.NewSocialMediaService(socialMediaRepo)
+		socialMediaController := controllers.NewSocialMediaController(socialMediaService)
+
 		socialMediaRouter.Use(middlewares.Authentication())
 		// Create
-		socialMediaRouter.POST("/", controllers.CreateSocialMedia)
+		socialMediaRouter.POST("/", socialMediaController.CreateSocialMedia)
 		// Read All
-		socialMediaRouter.GET("/", controllers.GetAllSocialMedias)
+		socialMediaRouter.GET("/", socialMediaController.GetAllSocialMedia)
 		// Read
-		socialMediaRouter.GET("/:socialMediaId", controllers.GetSocialMediaById)
+		socialMediaRouter.GET("/:socialMediaId", socialMediaController.GetSocialMediaById)
 		// Update
-		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), controllers.UpdateSocialMedia)
+		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaController.UpdateSocialMedia)
 		// Delete
-		socialMediaRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), controllers.DeleteSocialMediaById)
+		socialMediaRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaController.DeleteSocialMedia)
 	}
 
 	photoRouter := r.Group("/photos")
 	{
+		photoRepo := repositories.NewPhotoRepository(database.GetDB())
+		photoService := services.NewPhotoService(photoRepo)
+		photoController := controllers.NewPhotoController(photoService)
+
 		photoRouter.Use(middlewares.Authentication())
 		// Create
-		photoRouter.POST("/", controllers.CreatePhoto)
+		photoRouter.POST("/", photoController.CreatePhoto)
 		// Read All
-		photoRouter.GET("/", controllers.GetAllPhotos)
+		photoRouter.GET("/", photoController.GetAllPhoto)
 		// Read
-		photoRouter.GET("/:photoId", controllers.GetPhotoById)
+		photoRouter.GET("/:photoId", photoController.GetPhotoById)
 		// Update
-		photoRouter.PUT("/:photoId", middlewares.PhotoAuthorization(), controllers.UpdatePhoto)
+		photoRouter.PUT("/:photoId", middlewares.PhotoAuthorization(), photoController.UpdatePhoto)
 		// Delete
-		photoRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(), controllers.DeletePhotoById)
+		photoRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(), photoController.DeletePhoto)
 	}
 
 	commentRouter := r.Group("/comments")
 	{
+		commentRepo := repositories.NewCommentRepository(database.GetDB())
+		photoRepo := repositories.NewPhotoRepository(database.GetDB())
+
+		commentService := services.NewCommentService(commentRepo, photoRepo)
+		commentController := controllers.NewCommentController(commentService)
+
 		commentRouter.Use(middlewares.Authentication())
 		// Create
-		commentRouter.POST("/", controllers.CreateComment)
+		commentRouter.POST("/", commentController.CreateComment)
 		// Read All
-		commentRouter.GET("/", controllers.GetAllComments)
+		commentRouter.GET("/", commentController.GetAllComment)
 		// Read
-		commentRouter.GET("/:commentId", controllers.GetCommentById)
+		commentRouter.GET("/:commentId", commentController.GetCommentById)
 		// Update
-		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), controllers.UpdateComment)
+		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), commentController.UpdateComment)
 		// Delete
-		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), controllers.DeleteCommentById)
+		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), commentController.DeleteComment)
 	}
 
 	return r
